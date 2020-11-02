@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cbx="clr-namespace:Syncfusion.XForms.ComboBox;assembly=Syncfusion.SfComboBox.XForms"
+             xmlns:busy="clr-namespace:Syncfusion.SfBusyIndicator.XForms;assembly=Syncfusion.SfBusyIndicator.XForms"             
+             xmlns:vm="clr-namespace:AuthXamSam.ViewModels"
+             x:Class="AuthXamSam.Views.CellarPage">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="itemTemplate">
+            <StackLayout Orientation="Horizontal">
+                <Label
+                    Margin="5,0"
+                    FontSize="15"
+                    HorizontalOptions="Center"
+                    Text="{Binding Text, Mode=OneWay}"
+                    TextColor="Black"/>
+            </StackLayout>
+        </DataTemplate>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <vm:CellarViewModel x:Name="view" />
+    </ContentPage.BindingContext>
+    <Grid>
+        <StackLayout VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand">
+            <Label Text="Select Cellar" Margin="0,20,0,0"/>
+            <cbx:SfComboBox x:Name="cbxCellers" 
+                                Margin="10,0,0,0"
+                                DataSource="{Binding CellarListItems}"
+                                DropDownItemHeight="30"
+                                HeightRequest="40"
+                                ItemTemplate="{StaticResource Key=itemTemplate}"
+                                SelectedItem="{Binding SelectedCellarListItem, Mode=OneWay}"
+                                SelectedValuePath="Text"
+                                SelectionChanged="cbxCellers_SelectionChanged"
+                                Text="{Binding Text, Mode=OneWay}"
+                                Watermark="Please Select a Cellar..." />
+            <busy:SfBusyIndicator Duration="1" AnimationType="SingleCircle" TextColor="#757a7f" 
+                                      VerticalOptions="End" Grid.Row="1" x:Name="busyIndicator" 
+                                      ViewBoxWidth="150" ViewBoxHeight="150" 
+                                      BackgroundColor="White"
+                                      IsBusy="{Binding IsBusy}" 
+                                      BindingContextChanged="busyIndicator_BindingContextChanged" />
+
+
+        </StackLayout>
+    </Grid>
+</ContentPage>
