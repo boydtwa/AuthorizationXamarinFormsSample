@@ -13,7 +13,7 @@ namespace AuthXamSam.Services
     public class MicrosoftAuthService : IMicrosoftAuthService
     {
         private readonly string ClientID = "<application ID for AuthXamSampAutheticationAp in Azure AD>";
-        private readonly string[] Scopes = { $"<applicatio ID in Azure Function API>/user_impersonation" };
+        private readonly string[] Scopes = { $"<applicatio ID in Azure Function API>/user_impersonation>" };
 
 
         public User CurrentUser { get; private set; }
@@ -121,11 +121,11 @@ namespace AuthXamSam.Services
             //Hard wire it for now
             CurrentUser = new User()
             {
-                DisplayName = "Boyd",
-                GivenName = "Boyd",
-                Surname = "Taylor",
-                Email = "boydtwa@yahoo.com",
-                UserPrincipalName = "boyd@boydtaylorpnl.onmicrosoft.com",
+                DisplayName = "<display name>",
+                GivenName = "<first name>",
+                Surname = "<last name>",
+                Email = "<email address>",
+                UserPrincipalName = "<user principle name>",
                 Token = token
             };
 
