@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace AuthXamSam.UnitTests.Services
 {
     [TestFixture]
-    public class WineStore
+    public class WineStoreTests
     {
         private AuthXamSam.Services.WineStore SystemUnderTest { get; set; }
 

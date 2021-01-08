@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 namespace AuthXamSam.UnitTests.ViewModels
 {
     [TestFixture]
-    public class LoginViewModel
+    public class LoginViewModelTests
     {
 
         [Test]

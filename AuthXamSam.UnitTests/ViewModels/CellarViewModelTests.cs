@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace AuthXamSam.UnitTests.ViewModels
 {
     [TestFixture]
-    public class CellarViewModel
+    public class CellarViewModelTests
     {
         protected Mock<HttpClient> MockHttpClient { get; private set; }
         protected Mock<IWineStore> MockWineStore { get; private set; }
