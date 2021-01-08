@@ -1,104 +1,128 @@
-﻿using AuthXamSam.Views;
-using AuthXamSam.Models;
-using AuthXamSam.Services;
-using System;
-using System.Net.Http;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AuthXamSam.Models;
+using AuthXamSam.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Xamarin.Forms;
-using Xamarin.Essentials;
 using GalaSoft.MvvmLight.Ioc;
+using Xamarin.Forms;
 
 namespace AuthXamSam.ViewModels
 {
-    public class LoginViewModel : ViewModelBase, ILoginViewModel
+    public class LoginViewModel : ViewModelBase
     {
-        private readonly IMicrosoftAuthService microsoftAuthService;
         private bool isLoading;
+        private IMessaging messenger;
+        private IMicrosoftAuthService microsoftAuthService;
+        private string signInOutText;
         private User user;
-        private readonly IMessaging messenger;
-        private string buttonText;
 
+        [PreferredConstructor]
+        public LoginViewModel()
+        {
+            InitializeViewModel(SimpleIoc.Default.GetInstance<IMicrosoftAuthService>(),
+                SimpleIoc.Default.GetInstance<IMessaging>());
+        }
 
-        public ICommand LoginCommand { get; }
+        public LoginViewModel(IMicrosoftAuthService MicrosoftAuthService, IMessaging Messenger = null,
+            string TestExceptionTestMsg = null)
+        {
+#if DEBUG
+            InitializeViewModel(MicrosoftAuthService, Messenger, TestExceptionTestMsg);
+#else
+            InitializeViewModel(SimpleIoc.Default.GetInstance<IMicrosoftAuthService>(), SimpleIoc.Default.GetInstance<IMessaging>(), null);
+#endif
+        }
 
-        public ICommand ButtonTextCommand { get; }
+        public ICommand SignInOutCommand { get; private set; }
+
+        public Command LoginCommand { get; }
+
+        public string ExceptionTestMsg { get; set; }
+
+        public string SignInOutText
+        {
+            get => signInOutText;
+            set => Set(ref signInOutText, value);
+        }
 
         public bool IsLoading
         {
-            get { return isLoading; }
-            set { Set(ref isLoading, value); }
+            get => isLoading;
+            set => Set(ref isLoading, value);
         }
 
         public User User
         {
-            get { return user; }
-            set { Set(ref user, value); }
+            get => user;
+            set => Set(ref user, value);
         }
 
-        public string ButtonText
+        private void InitializeViewModel(IMicrosoftAuthService MicrosoftAuthService, IMessaging Messenger = null,
+            string TestExceptionTestMsg = null)
         {
-            get { return buttonText; }
-            set { Set(ref buttonText, value); }
+            microsoftAuthService = MicrosoftAuthService;
+            messenger = Messenger ?? SimpleIoc.Default.GetInstance<IMessaging>();
+            SignInOutCommand = new RelayCommand(async () => await SignInOutAsync());
+            signInOutText = "Sign In";
+            ExceptionTestMsg = TestExceptionTestMsg ?? string.Empty;
         }
 
-        public LoginViewModel(IMicrosoftAuthService MicrososoftAuthService)
+        public async Task SignInOutAsync()
         {
-            microsoftAuthService = MicrososoftAuthService;
-            messenger = SimpleIoc.Default.GetInstance<IMessaging>();
-            LoginCommand = new RelayCommand(async () => await SignInAsync());
-            ButtonTextCommand = new RelayCommand(async () => await SetButtonText());
-            ButtonTextCommand.Execute(null);
-        }
-
-        public async Task SetButtonText()
-        {
-            var isAutheticated = await SecureStorage.GetAsync("tokenAuthXamSam");
-            ButtonText = isAutheticated != null ? "Logout" : "Login";
+            if (SignInOutText == "Sign In")
+                await SignInAsync();
+            else
+                await SignOutAsync();
         }
 
         public async Task SignInAsync()
         {
             try
             {
-                var storedToken = await SecureStorage.GetAsync("tokenAuthXamSam");
-                if (storedToken != null)
-                {
-                    await SignOutAsync();
-                    return;
-                }
                 IsLoading = true;
                 User = await microsoftAuthService.OnSignInAsync();
-                ButtonTextCommand.Execute(null);
-                IsLoading = false;
-                App.Current.MainPage = new AppShell();
+                if (User.DisplayName != "Not Authenticated")
+                {
+                    if (User.DisplayName == "Testing Exception") throw new Exception("For Testing Sign In Exception");
+                    IsLoading = false;
+                    SignInOutText = "Sign Out";
+                    Application.Current.MainPage = new AppShell();
+                }
+                else
+                {
+                    await messenger.ShowMessageAsync("Authentication Error",
+                        "User Name and or Password are not valid. OR you are not authorized to use this application");
+                    IsLoading = false;
+                    //message Center toast for Not Autheticated
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                await messenger.ShowMessageAsync("Authentication Error", $"Failed to Sign In. Message: {ex.Message}");
+                // Manage the exception as you need, you can display an error message using a popup.
+                Debug.WriteLine(ex.ToString());
+                ExceptionTestMsg = ex.Message;
             }
         }
 
         public async Task SignOutAsync()
         {
-            Xamarin.Essentials.SecureStorage.Remove("tokenAuthXamSam");
             try
             {
-                this.IsLoading = true;
+                if (ExceptionTestMsg == "Testing Exception") throw new Exception("For Testing Sign In Exception");
+                IsLoading = true;
                 await microsoftAuthService.OnSignOutAsync();
-                ButtonTextCommand.Execute(null);
                 user = null;
-                this.IsLoading = false;
-                App.Current.MainPage = new LoginPage();
+                SignInOutText = "Sign In";
+                IsLoading = false;
             }
             catch (Exception ex)
             {
                 // Manage the exception as you need, you can display an error message using a popup.
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                await messenger.ShowMessageAsync("Authentication Error", $"Failed to Log Out. Message: {ex.Message}");
+                Debug.WriteLine(ex.ToString());
+                ExceptionTestMsg = ex.Message;
             }
         }
     }

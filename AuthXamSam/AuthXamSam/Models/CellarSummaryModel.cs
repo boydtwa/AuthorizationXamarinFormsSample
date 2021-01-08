@@ -15,7 +15,7 @@ namespace AuthXamSam.Models
 
         public int BottleCount { get; set; }
 
-        // Currencey value of Wine in Cellar
+        // Currency value of Wine in Cellar
         public double Value { get; set; }
 
         public IList<BottleBriefModel> Bottles { get; set; }

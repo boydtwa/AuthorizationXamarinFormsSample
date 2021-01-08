@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthXamSam.Android", "AuthXamSam\AuthXamSam.Android\AuthXamSam.Android.csproj", "{FDA40365-0BE9-445F-BEF3-583A9778BCD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthXamSam", "AuthXamSam\AuthXamSam\AuthXamSam.csproj", "{63C3BDFD-04BB-4D27-94D1-DC1310688691}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthXamSam", "AuthXamSam\AuthXamSam\AuthXamSam.csproj", "{63C3BDFD-04BB-4D27-94D1-DC1310688691}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthXamSam.UnitTests", "AuthXamSam.UnitTests\AuthXamSam.UnitTests.csproj", "{092EC359-790B-4513-8EFB-14F8372DF759}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{63C3BDFD-04BB-4D27-94D1-DC1310688691}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63C3BDFD-04BB-4D27-94D1-DC1310688691}.Release|Any CPU.Build.0 = Release|Any CPU
 		{63C3BDFD-04BB-4D27-94D1-DC1310688691}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{092EC359-790B-4513-8EFB-14F8372DF759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{092EC359-790B-4513-8EFB-14F8372DF759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{092EC359-790B-4513-8EFB-14F8372DF759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{092EC359-790B-4513-8EFB-14F8372DF759}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

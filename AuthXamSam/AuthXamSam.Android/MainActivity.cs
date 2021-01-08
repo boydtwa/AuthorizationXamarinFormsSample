@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -8,6 +9,7 @@ using Android.Widget;
 using Android.OS;
 using Microsoft.Identity.Client;
 using AuthXamSam.Services;
+
 
 namespace AuthXamSam.Droid
 {

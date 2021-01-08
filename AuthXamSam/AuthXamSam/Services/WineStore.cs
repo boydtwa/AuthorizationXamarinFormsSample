@@ -1,9 +1,9 @@
-﻿using AuthXamSam.Models;
+﻿using GalaSoft.MvvmLight.Ioc;
+using AuthXamSam.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 
@@ -11,23 +11,42 @@ namespace AuthXamSam.Services
 {
     public class WineStore : IWineStore
     {
-        HttpClient client;
-        public string cellarSummaryUri { get; }
+        private HttpClient _client;
+        public string CellarBottleDetailsUri { get; private set; }
+        public string CellarSummaryUri { get; private set; }
+        public string CellarSummaryBottlesUri { get; private set; }
 
-        public WineStore()
+        public HttpClient Client
         {
-            client = new HttpClient();
-
-            cellarSummaryUri = "<Uri to API that returns the Cellar Summary>";
+            get => _client;
+            set => _client = value;
         }
 
-        public async Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(bool forceRefresh = false)
+        private string Token { get; set; }
+
+        [PreferredConstructor]
+        public WineStore()
+        {
+            _client = new HttpClient();
+            LoadServiceUrls();
+        }
+
+        public WineStore(HttpClient WebClient)
+        {
+            _client = WebClient;
+            LoadServiceUrls();
+        }
+
+        public async Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(bool ForceRefresh = false, string BearerTokenString = null, HttpRequestMessage HttpMessage = null)
         {
             var listofCellars = new ObservableCollection<CellarSummaryModel>();
-            var token = SecureStorage.GetAsync("tokenAuthXamSam").Result;
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, cellarSummaryUri);
-            message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            var response = await client.SendAsync(message);
+            Token = BearerTokenString??SecureStorage.GetAsync("token").Result;
+            HttpMessage = HttpMessage?? new HttpRequestMessage(HttpMethod.Get, CellarSummaryUri);
+            HttpMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+
+
+
+            var response = await _client.SendAsync(HttpMessage);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -36,6 +55,12 @@ namespace AuthXamSam.Services
             /// TODO: handle unauthorized response
 
             return listofCellars;
+        }
+        private void LoadServiceUrls()
+        {
+            CellarBottleDetailsUri = "https://api.mywinedb.org/CellarBottleDetails";
+            CellarSummaryUri = "https://api.mywinedb.org/CellarList";
+            CellarSummaryBottlesUri = "https://api.mywinedb.org/CellarBottleSummaries";
         }
     }
 }

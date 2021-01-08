@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 
 using Xamarin.Forms;
 
 using AuthXamSam.Models;
 using AuthXamSam.Services;
-using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System.Threading.Tasks;
-using System.Net.Http;
+using GalaSoft.MvvmLight.Ioc;
 
 namespace AuthXamSam.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IWineStore WineStore { get; }
-
-        public ICommand BaseSignOutCommand { get; }
-
-
+        public IWineStore WineStore { get; set; }
         bool isBusy = false;
         public bool IsBusy
         {
@@ -49,6 +43,19 @@ namespace AuthXamSam.ViewModels
             return true;
         }
 
+        public BaseViewModel()
+        {
+            try
+            {
+                WineStore = SimpleIoc.Default.GetInstance<IWineStore>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+        }
+
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
@@ -60,16 +67,5 @@ namespace AuthXamSam.ViewModels
             changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-
-        public BaseViewModel()
-        {
-            WineStore = SimpleIoc.Default.GetInstance<IWineStore>();
-            BaseSignOutCommand = new RelayCommand(async () => await BaseSignOutAsync());
-        }
-
-        public async Task BaseSignOutAsync()
-        {
-            var answer = await App.Current.MainPage.DisplayAlert("Log Out Confirmation", "Are you sure you want to Log Out?", "Yes", "No");
-        }
     }
 }

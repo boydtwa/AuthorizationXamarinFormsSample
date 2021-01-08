@@ -1,69 +1,79 @@
 ﻿using AuthXamSam.Models;
-
+using AuthXamSam.Services;
+using GalaSoft.MvvmLight.Ioc;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace AuthXamSam.ViewModels
 {
     public class CellarViewModel : BaseViewModel
     {
-        private CellarListItem selectedCellarListItem;
+        private bool ThrowExceptionFlag { get; set; }
+        private CellarListItem _selectedCellarListItem;
+        private ObservableCollection<Vintage> _cellarVintages;
         private ObservableCollection<CellarListItem> cellarListItems;
 
         public ObservableCollection<CellarListItem> CellarListItems
         {
             get => cellarListItems;
-            set
-            {
-                SetProperty(ref cellarListItems, value, "CellarListItems");
-            }
+            set => SetProperty(ref cellarListItems, value, "CellarListItems");
         }
-
+        public ObservableCollection<Vintage> CellarVintages
+        {
+            get => _cellarVintages;
+            set => SetProperty(ref _cellarVintages, value, "CellarVintages");
+        }
+        public IAsyncCommand LoadCellarsList { get; private set; }
         public CellarListItem SelectedCellarListItem
         {
-            get => selectedCellarListItem;
-            set
-            {
-                SetProperty(ref selectedCellarListItem, value);
-            }
+            get => _selectedCellarListItem;
+            set => SetProperty(ref _selectedCellarListItem, value);
         }
 
-        public IAsyncCommand LoadCellarsList { get; private set; }
-
+        [PreferredConstructor]
         public CellarViewModel()
         {
-            CellarListItems = new ObservableCollection<CellarListItem>();
-            Title = "Home";
-            LoadCellarsList = new AsyncCommand(() => PopulateCellarListAsync(), () => CanExecute());
-
+            InitializeViewModel(false);
         }
 
-        private async Task PopulateCellarListAsync()
+        public CellarViewModel(bool TestException=false, IWineStore Store = null)
+        {
+            this.WineStore = Store ?? this.WineStore;
+#if DEBUG
+            InitializeViewModel(TestException);
+#else
+            InitializeViewModel(false);
+#endif
+            
+        }
+
+        public async Task PopulateCellarListAsync()
         {
             try
             {
+                if (ThrowExceptionFlag)
+                {
+                    throw new Exception();
+                }
                 IsBusy = true;
                 var listCellarSummaryModel = await WineStore.GetCellarsAsync();
                 var enumCellarListItems = ((from c in listCellarSummaryModel
-                                            select new CellarListItem()
-                                            {
-                                                Text = $"{c.Name}" + $" - Bottles: {c.BottleCount}" + (c.Capacity > 0 ? $" - % Capacity: {((c.BottleCount / c.Capacity) * 100).ToString("P")}" : string.Empty),
-                                                Key = c.CellarId,
-                                            }).AsEnumerable()).ToList();
+                    select new CellarListItem()
+                    {
+                        Text = $"{c.Name}" + $" - Bottles: {c.BottleCount}" + (c.Capacity > 0
+                            ? $" - % Capacity: {((c.BottleCount / c.Capacity) * 100):P}"
+                            : string.Empty),
+                        Key = c.CellarId,
+
+                    }).AsEnumerable()).ToList();
 
                 CellarListItems = new ObservableCollection<CellarListItem>(enumCellarListItems);
+            }
+            catch
+            {
+                _selectedCellarListItem = new CellarListItem() {Text = "Exception Occurred"};
             }
             finally
             {
@@ -80,5 +90,13 @@ namespace AuthXamSam.ViewModels
             return !IsBusy;
         }
 
+        private void InitializeViewModel(bool TestException)
+        {
+            ThrowExceptionFlag = TestException;
+            CellarListItems = new ObservableCollection<CellarListItem>();
+            Title = "Home";
+            CellarVintages = new ObservableCollection<Vintage>();
+            LoadCellarsList = new AsyncCommand(()=>PopulateCellarListAsync(), ()=>CanExecute());
+        }
     }
 }
