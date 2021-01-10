@@ -37,7 +37,7 @@ namespace AuthXamSam.Services
             LoadServiceUrls();
         }
 
-        public async Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(bool ForceRefresh = false, string BearerTokenString = null, HttpRequestMessage HttpMessage = null)
+        public async Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(string BearerTokenString = null, HttpRequestMessage HttpMessage = null)
         {
             var listofCellars = new ObservableCollection<CellarSummaryModel>();
             Token = BearerTokenString??SecureStorage.GetAsync("token").Result;

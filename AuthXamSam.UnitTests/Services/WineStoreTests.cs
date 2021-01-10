@@ -41,7 +41,7 @@ namespace AuthXamSam.UnitTests.Services
             var mockHttpClient = new HttpClient(fakeHandler) {BaseAddress = new Uri("http://localhost")};
             SystemUnderTest = new AuthXamSam.Services.WineStore(mockHttpClient);
 
-            var result = await Task.FromResult(SystemUnderTest.GetCellarsAsync(false, "foobarToken"));
+            var result = await Task.FromResult(SystemUnderTest.GetCellarsAsync("foobarToken"));
             var expectedResult =
                 JsonConvert.DeserializeObject<ObservableCollection<CellarSummaryModel>>(TestValues
                     .CellarSummaryModelListJson);
@@ -64,7 +64,7 @@ namespace AuthXamSam.UnitTests.Services
             var fakeHandler = new FakeHttpMessageHandler(fakeResponse);
             var fakeHttpClient = new HttpClient(fakeHandler) {BaseAddress = new Uri("http://localhost")};
             SystemUnderTest = new AuthXamSam.Services.WineStore(fakeHttpClient);
-            var response = await Task.FromResult(SystemUnderTest.GetCellarsAsync(false, "foobarToken"));
+            var response = await Task.FromResult(SystemUnderTest.GetCellarsAsync( "foobarToken"));
             Assert.AreEqual(0, response.Result.Count);
         }
 

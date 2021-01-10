@@ -11,6 +11,6 @@ namespace AuthXamSam.Services
     public interface IWineStore
     {
         HttpClient Client { get; set; }
-        Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(bool ForceRefresh = false, string BearerTokenString = null, HttpRequestMessage HttpMessage = null);
+        Task<ObservableCollection<CellarSummaryModel>> GetCellarsAsync(string BearerTokenString = null, HttpRequestMessage HttpMessage = null);
     }
 }

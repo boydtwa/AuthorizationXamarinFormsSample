@@ -1,10 +1,13 @@
-﻿using AuthXamSam.Models;
+﻿using System;
+using AuthXamSam.Models;
 using AuthXamSam.Services;
 using Moq;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using NUnit.Framework.Constraints;
 
 namespace AuthXamSam.UnitTests.ViewModels
 {
@@ -24,9 +27,9 @@ namespace AuthXamSam.UnitTests.ViewModels
         [Test]
         public async Task PopulateCellarListAsync_ReturnsACellarInList_Success()
         {
-            MockWineStore.Setup(c => c.GetCellarsAsync(false,null,null)).ReturnsAsync(TestValues.CellarSummaryModelListObject);
+            MockWineStore.Setup(c => c.GetCellarsAsync(null,null)).ReturnsAsync(TestValues.CellarSummaryModelListObject);
 
-            var sut = new AuthXamSam.ViewModels.CellarViewModel(false, MockWineStore.Object);
+            var sut = new AuthXamSam.ViewModels.CellarViewModel(MockWineStore.Object);
             await sut.PopulateCellarListAsync();
 
             Assert.AreEqual(1,sut.CellarListItems.Count);
@@ -35,19 +38,20 @@ namespace AuthXamSam.UnitTests.ViewModels
         [Test]
         public async Task PopulateCellarListAsync_ReturnsEmptyCellarList_Success()
         {
-            MockWineStore.Setup(c => c.GetCellarsAsync(false, null, null)).ReturnsAsync(new ObservableCollection<CellarSummaryModel>());
-            var sut = new AuthXamSam.ViewModels.CellarViewModel(false, MockWineStore.Object);
+            MockWineStore.Setup(c => c.GetCellarsAsync( null, null)).ReturnsAsync(new ObservableCollection<CellarSummaryModel>());
+            var sut = new AuthXamSam.ViewModels.CellarViewModel(MockWineStore.Object);
             await sut.PopulateCellarListAsync();
 
             Assert.AreEqual(0,sut.CellarListItems.Count);
         }
 
         [Test]
-        public async Task PopulateCellarListAsync_ThrowsException()
+        public void PopulateCellarListAsync_ThrowsException()
         {
-            var sut = new AuthXamSam.ViewModels.CellarViewModel(true, MockWineStore.Object);
-            await sut.PopulateCellarListAsync();
-            Assert.AreEqual("Exception Occurred", sut.SelectedCellarListItem.Text);
+            MockWineStore.Setup(p => p.GetCellarsAsync(null,null) ).Throws<Exception>();
+            var sut = new AuthXamSam.ViewModels.CellarViewModel(MockWineStore.Object);
+
+            Assert.That(async ()=>await sut.PopulateCellarListAsync(),new ThrowsExceptionConstraint());
         }
     }
 }

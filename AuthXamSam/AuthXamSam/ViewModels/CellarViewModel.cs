@@ -10,7 +10,6 @@ namespace AuthXamSam.ViewModels
 {
     public class CellarViewModel : BaseViewModel
     {
-        private bool ThrowExceptionFlag { get; set; }
         private CellarListItem _selectedCellarListItem;
         private ObservableCollection<Vintage> _cellarVintages;
         private ObservableCollection<CellarListItem> cellarListItems;
@@ -38,25 +37,15 @@ namespace AuthXamSam.ViewModels
             InitializeViewModel(false);
         }
 
-        public CellarViewModel(bool TestException=false, IWineStore Store = null)
+        public CellarViewModel(IWineStore Store = null)
         {
             this.WineStore = Store ?? this.WineStore;
-#if DEBUG
-            InitializeViewModel(TestException);
-#else
-            InitializeViewModel(false);
-#endif
-            
         }
 
         public async Task PopulateCellarListAsync()
         {
             try
             {
-                if (ThrowExceptionFlag)
-                {
-                    throw new Exception();
-                }
                 IsBusy = true;
                 var listCellarSummaryModel = await WineStore.GetCellarsAsync();
                 var enumCellarListItems = ((from c in listCellarSummaryModel
@@ -71,13 +60,13 @@ namespace AuthXamSam.ViewModels
 
                 CellarListItems = new ObservableCollection<CellarListItem>(enumCellarListItems);
             }
-            catch
+            catch(Exception e)
             {
-                _selectedCellarListItem = new CellarListItem() {Text = "Exception Occurred"};
+                throw e;
             }
             finally
             {
-                if (CellarListItems.Count > 0)
+                if (CellarListItems != null && CellarListItems.Count > 0)
                 {
                     SelectedCellarListItem = CellarListItems.First();
                 }
@@ -92,7 +81,6 @@ namespace AuthXamSam.ViewModels
 
         private void InitializeViewModel(bool TestException)
         {
-            ThrowExceptionFlag = TestException;
             CellarListItems = new ObservableCollection<CellarListItem>();
             Title = "Home";
             CellarVintages = new ObservableCollection<Vintage>();

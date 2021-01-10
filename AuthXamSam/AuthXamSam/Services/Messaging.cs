@@ -10,7 +10,7 @@ namespace AuthXamSam.Services
     {
         public async Task ShowMessageAsync(string Title, string Message)
         {
-            await App.Current.MainPage.DisplayAlert(Title, Message, "OK");
+            await Xamarin.Forms.Application.Current.MainPage.DisplayAlert(Title, Message, "OK");
         }
     }
 }

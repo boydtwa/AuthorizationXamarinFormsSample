@@ -79,9 +79,9 @@ namespace AuthXamSam.Services
                     return CurrentUser;
                 }
             }
-            catch (Exception e3)
+            catch (Exception e4)
             {
-                var msg = e3.Message;
+                var msg = e4.Message;
                 return CurrentUser;
             }
 
