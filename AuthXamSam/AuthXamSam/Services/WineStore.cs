@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using System;
+using GalaSoft.MvvmLight.Ioc;
 using AuthXamSam.Models;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
@@ -52,7 +53,10 @@ namespace AuthXamSam.Services
                 var content = await response.Content.ReadAsStringAsync();
                 listofCellars = JsonConvert.DeserializeObject<ObservableCollection<CellarSummaryModel>>(content);
             }
-            /// TODO: handle unauthorized response
+            else
+            {
+                throw new Exception($"Request did not return a Success Status Code code is: {response.StatusCode}");
+            }
 
             return listofCellars;
         }

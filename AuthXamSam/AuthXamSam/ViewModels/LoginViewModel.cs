@@ -29,11 +29,9 @@ namespace AuthXamSam.ViewModels
         public LoginViewModel(IMicrosoftAuthService MicrosoftAuthService, IMessaging Messenger = null,
             string TestExceptionTestMsg = null)
         {
-#if DEBUG
-            InitializeViewModel(MicrosoftAuthService, Messenger, TestExceptionTestMsg);
-#else
-            InitializeViewModel(SimpleIoc.Default.GetInstance<IMicrosoftAuthService>(), SimpleIoc.Default.GetInstance<IMessaging>(), null);
-#endif
+
+            InitializeViewModel(SimpleIoc.Default.GetInstance<IMicrosoftAuthService>(),
+                SimpleIoc.Default.GetInstance<IMessaging>(), null);
         }
 
         public ICommand SignInOutCommand { get; private set; }

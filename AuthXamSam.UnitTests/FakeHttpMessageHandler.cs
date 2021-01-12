@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace MyWineDb.Mobile.UnitTests
 {
+    // Extracted from the GitHub Repository https://gist.github.com/benhysell/499581ed48299cd442f1
+    // Thank You Benjamin Hysell!
     public class FakeHttpMessageHandler : HttpMessageHandler
     {
         readonly HttpResponseMessage response;

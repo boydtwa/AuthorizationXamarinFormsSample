@@ -38,8 +38,8 @@ namespace AuthXamSam.UnitTests.Services
                 Content = new StringContent(TestValues.CellarSummaryModelListJson, Encoding.UTF8, "application/json")
             };
             var fakeHandler = new FakeHttpMessageHandler(fakeResponse);
-            var mockHttpClient = new HttpClient(fakeHandler) {BaseAddress = new Uri("http://localhost")};
-            SystemUnderTest = new AuthXamSam.Services.WineStore(mockHttpClient);
+            var fakeHttpClient = new HttpClient(fakeHandler) {BaseAddress = new Uri("http://localhost")};
+            SystemUnderTest = new AuthXamSam.Services.WineStore(fakeHttpClient);
 
             var result = await Task.FromResult(SystemUnderTest.GetCellarsAsync("foobarToken"));
             var expectedResult =
@@ -55,7 +55,7 @@ namespace AuthXamSam.UnitTests.Services
         }
 
         [Test]
-        public async Task GetCellarsAsync_ReturnsEmptyCollectionWhenResponseIsNotValid()
+        public void GetCellarsAsync_ThrowsExceptionWhenResponseIsNotSuccess()
         {
             var fakeResponse = new HttpResponseMessage
             {
@@ -64,8 +64,8 @@ namespace AuthXamSam.UnitTests.Services
             var fakeHandler = new FakeHttpMessageHandler(fakeResponse);
             var fakeHttpClient = new HttpClient(fakeHandler) {BaseAddress = new Uri("http://localhost")};
             SystemUnderTest = new AuthXamSam.Services.WineStore(fakeHttpClient);
-            var response = await Task.FromResult(SystemUnderTest.GetCellarsAsync( "foobarToken"));
-            Assert.AreEqual(0, response.Result.Count);
+
+            Assert.That(async ()=> await SystemUnderTest.GetCellarsAsync("foobarToken"), Throws.Exception);
         }
 
     }

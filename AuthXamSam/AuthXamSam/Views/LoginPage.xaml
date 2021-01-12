@@ -8,7 +8,7 @@
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-            <Button VerticalOptions="Center" Text="{Binding ButtonText}" Command="{Binding LoginCommand}"/>
-        </StackLayout>
+            <Button Text="{Binding SignInOutText}" Command="{Binding SignInOutCommand}" IsVisible="true"
+                    VerticalOptions="End" HorizontalOptions="FillAndExpand"/>        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
